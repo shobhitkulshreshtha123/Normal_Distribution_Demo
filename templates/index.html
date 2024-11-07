@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Normal Distribution of Random Numbers Interactive Demonstration</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0000, #3d0c47);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            font-size: 20px; /* Increased font size */
+        }
+        h1 {
+            font-size: 28px;
+            margin-top: 20px;
+        }
+        .plot-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 5px; /* Reduced space between the plots */
+            margin-top: 20px;
+        }
+        .plot-container img {
+            width: 390px;  /* Increased width by about 30% */
+            height: auto;
+        }
+        .explanation, .added-numbers, .ks-test {
+            font-size: 20px; /* Set font size to 20px */
+            margin-top: 15px;
+            text-align: center;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button-container button {
+            background-color: #5f10cf;
+            color: #ffffff;
+            font-size: 20px; /* Button text size increased */
+            font-family: Roboto, sans-serif;
+            border: 2px solid #ffffff;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Normal Distribution of Random Numbers Interactive Demonstration</h1>
+
+    {% if not show_plots %}
+        <!-- Input form for adding numbers -->
+        <form action="{{ url_for('index') }}" method="post">
+            <label for="numbers">Enter any random numbers between 0-20 to be added to the normal distribution to observe the impact separated by a single space:</label>
+            <input type="text" id="numbers" name="numbers" required>
+            <button type="submit">Submit</button>
+        </form>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    {% else %}
+        <!-- Display plots only after submission -->
+        <div class="plot-container">
+            <div>
+                <h3>Original Distribution</h3>
+                <img src="data:image/png;base64,{{ original_plot_url }}" alt="Original Distribution Plot">
+                <p>Kurtosis: {{ original_kurtosis }}, Skewness: {{ original_skewness }}</p>
+                <p>Mean: {{ original_mean }}, Std Dev: {{ original_std_dev }}</p>
+            </div>
+            <div>
+                <h3>Updated Distribution with Overlayed Curves</h3>
+                <img src="data:image/png;base64,{{ updated_plot_url }}" alt="Updated Distribution Plot">
+                <p>Kurtosis: {{ updated_kurtosis }}, Skewness: {{ updated_skewness }}</p>
+                <p>Mean: {{ updated_mean }}, Std Dev: {{ updated_std_dev }}</p>
+            </div>
+        </div>
+        
+        <p class="explanation">Adding more values affects the shape of the distribution. Kurtosis tells us about the 'peakedness' or flatness of the curve; skewness tells us if data is leaning left or right. Here, the changes indicate how user inputs shifted the natural spread of values.</p>
+        
+        <p class="ks-test">{{ ks_test_results }}</p>
+        
+        <p class="added-numbers">Numbers you added: {{ new_numbers | join(', ') }}</p>
+        
+        <div class="button-container">
+            <form action="{{ url_for('reset') }}" method="get">
+                <button type="submit">Reset</button>
+            </form>
+        </div>
+    {% endif %}
+</body>
+</html>
